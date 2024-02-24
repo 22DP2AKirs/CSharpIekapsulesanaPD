@@ -22,7 +22,7 @@
         if (int.TryParse(Console.ReadLine(), out int lietotajaIzvele)) {
           switch (lietotajaIzvele) {
             case 1:
-            //   ATM.atm.UserAccountBalance -= ATM.atm.CashDispense();
+              ATM.atm.CashDispense();
               break;
             case 2: // Palielina lietotāja bankas konta balansu un bankomāta naudas dadzumu par ievadīto summu, un samazina maka naudas daudzumu.
               int takenMoneyAmount = ATM.atm.CashIntake(); // Iegūst naudas summas skaitli, kuru lietotājs ielika bankomātā.
@@ -77,10 +77,10 @@
     private int machineBalance; // Bankomāta valūtas daudzums. Nosaka cik daudz naudas tas var izdot.
     private int userAccountBalance; // Bankomāta lietotāja naudas daudzums kontā. Nosaka cik daudz naudas lietotājs var izņemt no bankomāta.
 
-    public ATM(int machineBalance, int userBalance) 
+    public ATM(int machineBalance, int userAccountBalance) 
     {
       this.machineBalance = machineBalance; // Nepieciešams, lai zinātu cik daudz naudas 'šis' bankomāts var izdot.
-      this.userAccountBalance = userBalance; // Nepieciešams, lai saprastu cik daudz naudas ir uz lietotāja konta.
+      this.userAccountBalance = userAccountBalance; // Nepieciešams, lai saprastu cik daudz naudas ir uz lietotāja konta.
 
       ATMcount++; // Palielina katru reizi, kad tiek izveidots jauns klases objekts.
     }
@@ -106,7 +106,28 @@
 
     public void CashDispense() 
     {
-
+      Console.Write("Enter amount that you want to withdraw: ");
+      while (true)
+      {
+        if (int.TryParse(Console.ReadLine(), out int number)) // TryParse garantē, ka atgriests būs int, tikai tad, kad ievade sastāves tikai no cipariem.
+        { 
+          if (number % 10 == 5 || number % 10 == 0) // Pārbauda vai ievadītais daudzums var būt izdots ar banknotēm (5 , 10 , 20 , 50 , ..., ).
+          { 
+            // Pārbauda vai norādīto summu var noņemt no bankomāta un konta, neejot mīnusos.
+            if (CheckIfFundsCanBeSubtracted(machineBalance, number) && CheckIfFundsCanBeSubtracted(userAccountBalance, number))
+            {
+              break;
+            }
+            else // Brīdina, ka bankomātā nav tik daudz naudas.
+            {
+              Console.WriteLine("ATM does not have enough funds for that action, please enter smaller amount!");
+            }
+          }
+          else {
+            Console.WriteLine("Please enter amount that can be dispensed! Number must end with 0 or 5.");
+          }
+        }
+      }
     }
 
     public int CashIntake() 
@@ -117,22 +138,25 @@
       string userInput; // Izveido mainīgo, kurš uzglabās lietotāja ievadi.
       int takenMoney = 0; // Mainīgais nosaka cik daudz naudas lietotājs ir ielicis bankomātā.
 
-      while (true) {
+      while (true) 
+      {
         userInput = Console.ReadLine(); // Ievāc ievadi.
 
         // Ja ievadi var pārveidot par int, tad to izdara un skaitli saglabā 'insertedMoney' mainīgajā. Mainīgo 'insertedMoney' izveido metodē (int insertedMoney).
-        if (int.TryParse(userInput, out int insertedMoney)) { 
+        if (int.TryParse(userInput, out int insertedMoney)) 
+        { 
           // Pārbauda vai ir ievadīts pareizais banknotes formāts.
-          if (insertedMoney == 5 || insertedMoney == 10 || insertedMoney == 20 || insertedMoney == 50 || insertedMoney == 100 || insertedMoney == 500) {
+          if (insertedMoney == 5 || insertedMoney == 10 || insertedMoney == 20 || insertedMoney == 50 || insertedMoney == 100 || insertedMoney == 500) 
+          {
             takenMoney += insertedMoney;
           }
-          // Pabrīdina, ka formāts nav pareizs.
-          else {
+          else // Pabrīdina, ka formāts nav pareizs.
+          {
             Console.WriteLine("\x1b[1A\x1b[6C" + " <---  Entered cash format is not approved! Cash wasn't taken."); // Dīvainie simboli ir ANSI escape sequences. \x1b ir hexidecimālais formāts (To atbalsta .NET).
           }
         }
-        // Iziet ārā no naudas ievākšanas posma, uzrādot cik daudz nauda tika ievākta.
-        else {
+        else // Iziet ārā no naudas ievākšanas posma, uzrādot cik daudz nauda tika ievākta.
+        {
           Console.WriteLine("Total money inserted: " + takenMoney + " EURO.");
           machineBalance += takenMoney; // TODO: Jāuzliek drošība ar bankomāta naudas limitu.
           return takenMoney;
@@ -140,9 +164,22 @@
       }
     }
 
-    
+    private bool CheckIfRequestCanBeCompleated() 
+    { // Metode pārbauda vai naudas summa var būt pārskaitīta, un ja nevar, tad pasaka iemeslu.
+      if (dailyDepositLimit) {
+        
+      }
+      return false;
+    }
 
 
-
+    private bool CheckIfFundsCanBeSubtracted(int firstValue, int secondValue)
+    {
+      if (firstValue - secondValue >= 0) 
+      {
+        return true;
+      }
+      return false;
+    }
   }
 }

@@ -12,3 +12,4 @@ C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\
 C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.pdb
 C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.genruntimeconfig.cache
 C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\ref\OksanaIekapsulesanaPD.dll
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.sourcelink.json
