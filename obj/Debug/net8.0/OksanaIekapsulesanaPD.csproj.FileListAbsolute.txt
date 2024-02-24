@@ -1,0 +1,14 @@
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\bin\Debug\net8.0\OksanaIekapsulesanaPD.exe
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\bin\Debug\net8.0\OksanaIekapsulesanaPD.deps.json
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\bin\Debug\net8.0\OksanaIekapsulesanaPD.runtimeconfig.json
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\bin\Debug\net8.0\OksanaIekapsulesanaPD.dll
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\bin\Debug\net8.0\OksanaIekapsulesanaPD.pdb
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.AssemblyInfoInputs.cache
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.AssemblyInfo.cs
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.csproj.CoreCompileInputs.cache
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.dll
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\refint\OksanaIekapsulesanaPD.dll
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.pdb
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\OksanaIekapsulesanaPD.genruntimeconfig.cache
+C:\Users\Adrians\Documents\Programmesana\OksanaIekapsulesanaPD\obj\Debug\net8.0\ref\OksanaIekapsulesanaPD.dll
