@@ -1,36 +1,34 @@
-﻿namespace Projekts
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace Projekts
 {
   class IekapsulesanaPD
   {
     public static Random rand = new(); // Izmantoju tikai .Next() metodei, kuras darbība ir iedot rand. skaitli no 0 (ieskaitot) - n (neieskaitot).
+
+    public static int userDailyDepositLimit = 10000; // Lietotājs nevarēs kontā ielikt vairāk par norādīto ikdienas limitu.
+    public static int userDailyWithdrawLimit = 5000; // Lietotājs nevarēs no konta izņemt vairāk par norādīto ikdienas limitu.
+    public static int userWalletSize = ChoseUsersWalletSize();
     
     static void Main(string[] args) {
       /* Šī ir galvenā metode, kura izpildīs visas programmas darbības.*/
       CleanScreen();
-      int userWalletSize;
-      
-      Console.WriteLine("Enter the amount of money that is in your wallet: "); 
-      while (!int.TryParse(Console.ReadLine(), out userWalletSize)) {} // Kamēr nav ievadīts skaitlis, tikmēr prasīs jaunu ievadi.
-      CleanScreen();
-
       // Bankomāta darbību cikls.
       while (true) {
-        Console.WriteLine("ATM balance: " + ATM.atm.MachineBalance + ", User account balance: " + ATM.atm.UserAccountBalance + ", User wallet size: " + userWalletSize);
+        ShowUserAndATMInformation();
 
         Console.WriteLine("Available actions:");
         Console.WriteLine("[1] - Take out money, [2] - Put in money, [3] - Find different ATM.");
         if (int.TryParse(Console.ReadLine(), out int lietotajaIzvele)) {
           switch (lietotajaIzvele) {
             case 1:
-              ATM.atm.CashDispense();
+              ATM.atm.CashDispense(); // Izdod lietotājam jeb klientam norādīto summu.
               break;
-            case 2: // Palielina lietotāja bankas konta balansu un bankomāta naudas dadzumu par ievadīto summu, un samazina maka naudas daudzumu.
-              int takenMoneyAmount = ATM.atm.CashIntake(); // Iegūst naudas summas skaitli, kuru lietotājs ielika bankomātā.
-              ATM.atm.UserAccountBalance += takenMoneyAmount; // Pieliek lietotāja konta balansam ievadīto summu.
-              userWalletSize -= takenMoneyAmount; // Noņem no maka bankomātā ielikto summu.
+            case 2: 
+              ATM.atm.CashIntake(); // Palielina lietotāja bankas konta balansu un bankomāta naudas dadzumu par ievadīto summu, un samazina maka naudas daudzumu un dienas limitu.
               break;
             case 3:
-              ATM.atm.FindDifferentATM();
+              ATM.atm.FindDifferentATM(); // Izveido jaunu ATM objektu (ar citiem datiem).
               break;
           }
           CleanScreen();
@@ -47,6 +45,35 @@
 
     //   Console.WriteLine("\n\nProgram end. Press <ENTER>");
     //   Console.ReadLine(); // Neaizver programmu.
+    }
+    private static void ShowUserAndATMInformation()
+    {
+      // Saliek datus masīvā kā tabulā.
+      string[,] information = 
+      { // 1. kol. bankomāta un konta informācija.           2. kol. lietotāja limiti.
+        {$"ATM balance: {ATM.atm.MachineBalance}",         "\x1b[G\x1b[30C" + $"Users daily deposit amount: {userDailyDepositLimit}"}, 
+        {$"Account balance: {ATM.atm.UserAccountBalance}", "\x1b[G\x1b[30C" + $"Users daily withdraw amount: {userDailyWithdrawLimit}"} 
+      };
+
+      for (int i = 0; i < 2; i++) 
+      {
+        for (int j = 0; j < 2; j++)
+        {
+          Console.Write(information[i,j]);
+        }
+        Console.WriteLine();
+      }
+      Console.WriteLine($"Wallet size: {userWalletSize}\n");
+    }
+
+    private static int ChoseUsersWalletSize()
+    {
+      int userWalletSize; // Izveido mainīgo, kuru vēlāk atgriezīs kā vērtību.
+      Console.WriteLine("Enter the amount of money that is in your wallet: "); 
+      while (!int.TryParse(Console.ReadLine(),  out userWalletSize)) {} // Kamēr nav ievadīts skaitlis, tikmēr prasīs jaunu ievadi.
+      CleanScreen();
+
+      return userWalletSize;
     }
 
     public static void CleanScreen() {
@@ -106,34 +133,38 @@
 
     public void CashDispense() 
     {
-      Console.Write("Enter amount that you want to withdraw: ");
+      Console.WriteLine("Enter amount that you want to withdraw.");
+      Console.WriteLine("To go back press 'ENTER'");
       while (true)
       {
         if (int.TryParse(Console.ReadLine(), out int number)) // TryParse garantē, ka atgriests būs int, tikai tad, kad ievade sastāves tikai no cipariem.
         { 
           if (number % 10 == 5 || number % 10 == 0) // Pārbauda vai ievadītais daudzums var būt izdots ar banknotēm (5 , 10 , 20 , 50 , ..., ).
           { 
-            // Pārbauda vai norādīto summu var noņemt no bankomāta un konta, neejot mīnusos.
-            if (CheckIfFundsCanBeSubtracted(machineBalance, number) && CheckIfFundsCanBeSubtracted(userAccountBalance, number))
-            {
+            if(CheckIfWithdrawRequestCanBeCompleated(number)) {
+              WithdrawSum(number);
               break;
             }
-            else // Brīdina, ka bankomātā nav tik daudz naudas.
+            else
             {
-              Console.WriteLine("ATM does not have enough funds for that action, please enter smaller amount!");
+              Console.WriteLine("Please enter different amount!");
             }
           }
           else {
             Console.WriteLine("Please enter amount that can be dispensed! Number must end with 0 or 5.");
           }
         }
+        else // Iziet ārā no cikla, ja ievade bija tukša ''.
+        {
+          break;
+        }
       }
     }
 
-    public int CashIntake() 
+    public void CashIntake() 
     {
       Console.WriteLine("ATM approves only banknotes with size of: 5 , 10 , 20 , 50 , 100 , 500");
-      Console.WriteLine("To end inake press 'ENTER'");
+      Console.WriteLine("To end intake press 'ENTER'");
 
       string userInput; // Izveido mainīgo, kurš uzglabās lietotāja ievadi.
       int takenMoney = 0; // Mainīgais nosaka cik daudz naudas lietotājs ir ielicis bankomātā.
@@ -148,6 +179,7 @@
           // Pārbauda vai ir ievadīts pareizais banknotes formāts.
           if (insertedMoney == 5 || insertedMoney == 10 || insertedMoney == 20 || insertedMoney == 50 || insertedMoney == 100 || insertedMoney == 500) 
           {
+            // Pievieno banknoti pie ievāktās summas.
             takenMoney += insertedMoney;
           }
           else // Pabrīdina, ka formāts nav pareizs.
@@ -157,27 +189,79 @@
         }
         else // Iziet ārā no naudas ievākšanas posma, uzrādot cik daudz nauda tika ievākta.
         {
-          Console.WriteLine("Total money inserted: " + takenMoney + " EURO.");
-          machineBalance += takenMoney; // TODO: Jāuzliek drošība ar bankomāta naudas limitu.
-          return takenMoney;
+          if (CheckIfDepositRequestCanBeCompleated(takenMoney))
+          {
+            Console.WriteLine("Total money inserted: " + takenMoney + " EURO.");
+            DepositSum(takenMoney);
+            break;
+          }
+          else // Nodzēš ievākto naudu.
+          {
+            Console.WriteLine("Your inserted cash was returned!");
+            takenMoney = 0;
+          }
         }
       }
     }
 
-    private bool CheckIfRequestCanBeCompleated() 
-    { // Metode pārbauda vai naudas summa var būt pārskaitīta, un ja nevar, tad pasaka iemeslu.
-      if (dailyDepositLimit) {
-        
+    private void DepositSum(int value)
+    { // * Metode pieskaita ievākto summu norādītajos mainīgajos.
+      IekapsulesanaPD.userDailyDepositLimit -= value;
+      IekapsulesanaPD.userWalletSize -= value;
+      userAccountBalance += value;
+      machineBalance += value;
+    }
+
+    private void WithdrawSum(int value)
+    { // * Metode atņem norādīto summu norādītajos mainīgajos.
+      IekapsulesanaPD.userWalletSize += value;
+      IekapsulesanaPD.userDailyWithdrawLimit -= value;
+      userAccountBalance -= value;
+      machineBalance -= value;
+    }
+
+    private bool CheckIfWithdrawRequestCanBeCompleated(int value) 
+    { // * Metode pārbauda norādīto naudas summu var izņemt no bankomāta.
+      if (userAccountBalance - value >= 0) 
+      { // Pārbauda vai summu var noņemt no konta.
+        if (IekapsulesanaPD.userDailyWithdrawLimit - value >= 0) 
+        { // Pārbauda vai lietotājs nepārsniedz savu ikdienas izņemšanas limitu.
+          if (machineBalance - value >= 0) 
+          { // Pārbauda vai summu var izņemt no bankomāta.
+            return true;
+          }
+          else
+          {
+            Console.WriteLine("ATM does not have enough funds to complete that action!");
+          }
+        }
+        else
+        {
+          Console.WriteLine("You are exeeding your daily withdraw limit! Today you can withdraw: " + IekapsulesanaPD.userDailyWithdrawLimit + " Euro.");
+        }
+      }
+      else
+      {
+        Console.WriteLine("Your account doesn't have those funds!");
       }
       return false;
     }
-
-
-    private bool CheckIfFundsCanBeSubtracted(int firstValue, int secondValue)
-    {
-      if (firstValue - secondValue >= 0) 
+    private bool CheckIfDepositRequestCanBeCompleated(int value) 
+    { // * Metode pārbauda vai naudas summu var būt pārskaitīt uz kontu, un ja nevar, tad pasaka iemeslu.
+      if (IekapsulesanaPD.userDailyDepositLimit - value >= 0) 
+      { // Pārbauda vai lietotājs nepārsniedz savu ikdienas naudas ieskaitīšanas limitu.
+        if (IekapsulesanaPD.userWalletSize - value >= 0) 
+        {
+          return true;
+        }
+        else
+        {
+          Console.WriteLine("Your dont have those funds!");
+        }
+      }
+      else
       {
-        return true;
+        Console.WriteLine("You are exeeding your daily deposit limit! You can still deposit: " + IekapsulesanaPD.userDailyDepositLimit + " Euro.");
       }
       return false;
     }
